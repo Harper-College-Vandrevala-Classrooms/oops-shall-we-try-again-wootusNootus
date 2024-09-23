@@ -3,11 +3,11 @@ import java.util.Scanner;
 
 public class Menu
 {
-    public static int validateInput(Integer lowerBound, Integer upperBound, String prompt, String error)
+    public static Integer validateInput(Integer lowerBound, Integer upperBound, String prompt, String error)
     {
         @SuppressWarnings("resource")
         Scanner scan = new Scanner(System.in);
-        int input = 0; // default of 0
+        Integer input = null; // default of 0
         boolean valid = false;
 
         System.out.println(prompt);
@@ -18,19 +18,7 @@ public class Menu
             {
                 input = scan.nextInt();
 
-                boolean withinLowerBound = true;
-                if (lowerBound != null) 
-                {
-                    withinLowerBound = input >= lowerBound;
-                }
-
-                boolean withinUpperBound = true;
-                if (upperBound != null) 
-                {
-                    withinUpperBound = input <= upperBound;
-                }
-
-                if (withinLowerBound && withinUpperBound) 
+                if (isWithinBounds(input, lowerBound, upperBound)) 
                 {
                     valid = true;
                 } else 
@@ -38,32 +26,72 @@ public class Menu
                     System.out.println(error);
                 }
             }
-            else 
+            else
             {
-                System.out.println(error);
-                scan.next();
+                String userInput = scan.next();
+                if(userInput.equalsIgnoreCase("exit"))
+                {
+                    break;
+                }
+                else if(userInput.equalsIgnoreCase("default"))
+                {
+                    input = 10;
+
+                    if (isWithinBounds(input, lowerBound, upperBound)) 
+                    {
+                        valid = true;
+                    } else 
+                    {
+                        System.out.println(error);
+                    }
+                }
+                else
+                {
+                    System.out.println(error);
+                    scan.next();
+                }
             }   
         }
 
         return input;
     }
 
+    public static boolean isWithinBounds(Integer input, Integer lowerBound, Integer upperBound) 
+    {
+        boolean withinLowerBound = (lowerBound == null || input >= lowerBound);
+        boolean withinUpperBound = (upperBound == null || input <= upperBound);
+
+        return withinLowerBound && withinUpperBound;
+    }
+
+    public static void handleUserInput(Integer value, String exitMessage)
+    {
+        if (value != null) 
+        {
+            System.out.println("You entered: " + value);
+        } 
+        else 
+        {
+            System.out.println(exitMessage);
+        }
+    }
+
     public static void main(String[] args) 
     {
         // Test case 1: No bounds
-        int value1 = validateInput(null, null, "Enter any integer: ", "Invalid input, try again!");
-        System.out.println("You entered: " + value1);
+        Integer value1 = validateInput(null, null, "Enter any integer (Enter \"default\" to use default value of 10 [\"exit\" to leave test case]): ", "Invalid input, try again!");
+        handleUserInput(value1, "You exited the test case.");
 
         // Test case 2: With a lower bound
-        int value2 = validateInput(10, null, "Enter an integer >= 10: ", "That's not it.");
-        System.out.println("You entered: " + value2);
+        Integer value2 = validateInput(10, null, "Enter an integer >= 10 (Enter \"default\" to use default value of 10 [\"exit\" to leave test case]): ", "That's not it.");
+        handleUserInput(value2, "You exited the test case.");
 
         // Test case 3: With an upper bound
-        int value3 = validateInput(null, 20, "Enter an integer <= 20: ", "ERROR! I REPEAT! ERROR!.");
-        System.out.println("You entered: " + value3);
+        Integer value3 = validateInput(null, 20, "Enter an integer <= 20 (Enter \"default\" to use default value of 10 [\"exit\" to leave test case]): ", "ERROR! I REPEAT! ERROR!.");
+        handleUserInput(value3, "You exited the test case.");
 
         // Test case 4: With both bounds
-        int value4 = validateInput(50, 15, "Enter an integer between 5 and 15: ", "Invalid input, please try again.");
-        System.out.println("You entered: " + value4);
+        Integer value4 = validateInput(5, 15, "Enter an integer between 5 and 15 (Enter \"default\" to use default value of 10 [\"exit\" to leave test case]): ", "Invalid input, please try again.");
+        handleUserInput(value4, "You exited the test case.");
     }
 }
